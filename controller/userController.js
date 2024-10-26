@@ -2,6 +2,20 @@ let userModel = require('../model/userSchema');
 let bcrypt = require('bcrypt');
 
 
+module.exports = home = (req, res)=>{
+  
+    if(typeof(req.session.user) != 'undefined'){
+      res.status(200).send({user:req.session.user,  isLogin:req.session.setLogin});
+      console.log(req.session.user.name + " is login ")
+      console.log(req.session.setLogin);
+    }else{
+      res.status(200).send("Home page");
+    }
+   
+  }
+
+
+
 module.exports = register=async (req, res)=>{
     const{name, email, password, confirmPassword, forgetPassword} = req.body ;
    
@@ -46,84 +60,58 @@ module.exports = register=async (req, res)=>{
     let salt = bcrypt.genSaltSync(10);
     let hashPassword = bcrypt.hashSync(password, salt);
 
-    let aUser = new userModel({name,email,password:hashPassword,forgetPassword, status : 'admin@user'});
+    let aUser = new userModel({name,email,password:hashPassword,forgetPassword});
 
     aUser.save().then((data)=>{
         // console.log(data);
-        res.send(name + " was registered successfully")
+        res.status(200).send(name + " was registered successfully")
     });
     }else{
-      res.send(error);
+      res.status(200).send(error);
     }
-
-
-      
+  
   }
 
 
 //  post login controller
 module.exports = login = async (req, res)=>{
-    // res.send('login reached');
+    // res.status(200).send('login reached');
     const{email, password, status} = req.body;
-    
-    if(status == 'admin@user'){
-      let data = await userModel.findOne({email, status: 'admin@user'}).exec();
-        if(data != null || data ){ 
-            bcrypt.compare(password, data.password, (err, isMatch)=>{
-                if(isMatch){
-                   setLogin = true;
-                    req.session.user = data;
-                    // console.log(req.session);
-                    res.send(email + " is login " + req.session.user);
-                    
-                }else{
-                    res.send("email or/and password does not exist");
-                           console.log("email or/and password does not exist");
-                }
-            })
-            
-        }
+
+    if( password.length < 1 || email.length < 1){
+      console.log("email/password must not be empty");
+      res.status(200).send("email/password must not be empty");
+
+    }else{
+     
+      let data = await userModel.findOne({email}).exec();
+       
+      await bcrypt.compare(password, data.password, (err, isMatch)=>{
+          if(isMatch){
+             req.session.setLogin = true;
+              req.session.user = data;
+              // console.log(req.session);
+              res.status(200).send({isLogin: req.session.setLogin, user: req.session.user } );
+              console.log(isMatch);
+              
+          }else{
+              res.status(200).send("email or/and password does not exist");
+                     console.log("email or/and password does not exist");
+          }
+      });
       
-      else if(!data || email == ''|| password == ''){
-          res.send("email or/and password does not exist");
-        }
 
-    
     }
-    
-   if(status != 'admin@user'){
-    let data = await userModel.findOne({email}).exec() ;
-    
-  
-      if(data != null || data ){ 
-          bcrypt.compare(password, data.password, (err, isMatch)=>{
-              if(isMatch){
-                 setAdminLogin = true;
-                  req.session.user = data;
-                  res.send('user', {aUser:req.session.user});
-                  console.log("setAdminLogin is " + setAdminLogin);
-              }else{
-                  res.send('login', {msg: "email or/and password does not exist"});
-                         console.log("email or/and password does not exist");
-              }
-          })
-          
-      }
-    
-    else if(!data || email == ''|| password == ''){
-        res.render('login', {msg: "email or/and password does not exist"});
-        console.log("Email or/and password does not exist");
-      }
-
-
-   }
-    
+        
+      
+       
 }
 
 // logout controller
 module.exports = logout = (req, res)=>{
   req.session.destroy(()=>{
   //  res.cookie({maxAge: 0});
+  req.session.setLogin = false ;
       res.redirect('/');
       console.log("You are Logout");
   });

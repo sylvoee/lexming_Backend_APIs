@@ -3,21 +3,19 @@
 let express = require('express');
 
 const userController = require('./controller/userController');
+const profileController = require('./controller/profileController');
+
 let router = express.Router()
 
-// HTTP request - GET
-router.get('/', (req, res)=>{
-  if(typeof(req.session.user) != 'undefined'){
-    res.send(req.session.user);
-  }else{
-    res.send("Home page");
-  }
- 
-  
-  });
+// HTTP request 
+   router.get('/', home);
   
   router.post('/register', register);
   router.post('/login', login);
   router.get('/logout', logout);
+
+  router.get('/view-profile/:id', viewProfile);
+  router.post('/profile', profile);
+  router.put('/update-profile', updateProfile);
 
   module.exports = router ;
