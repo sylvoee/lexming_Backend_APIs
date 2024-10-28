@@ -2,19 +2,6 @@ let userModel = require('../model/userSchema');
 let bcrypt = require('bcrypt');
 
 
-module.exports = home = (req, res)=>{
-  
-    if(typeof(req.session.user) != 'undefined'){
-      res.status(200).send({user:req.session.user,  isLogin:req.session.setLogin});
-      console.log(req.session.user.name + " is login ")
-      console.log(req.session.setLogin);
-    }else{
-      res.status(200).send("Home page");
-    }
-   
-  }
-
-
 
 module.exports = register=async (req, res)=>{
     const{name, email, password, confirmPassword, forgetPassword} = req.body ;
@@ -74,10 +61,16 @@ module.exports = register=async (req, res)=>{
 
 
 //  post login controller
-module.exports = login = async (req, res)=>{
+module.exports = login = async (req, res, next)=>{
     // res.status(200).send('login reached');
     const{email, password, status} = req.body;
 
+    // if already login, pls redirect
+    if(req.session.setLogin == true){
+      res.redirect('/');
+    }else{
+
+      
     if( password.length < 1 || email.length < 1){
       console.log("email/password must not be empty");
       res.status(200).send("email/password must not be empty");
@@ -99,19 +92,18 @@ module.exports = login = async (req, res)=>{
                      console.log("email or/and password does not exist");
           }
       });
-      
-
+    
     }
-        
-      
        
+    }
+   
 }
 
 // logout controller
 module.exports = logout = (req, res)=>{
+  req.session.setLogin = false ;
   req.session.destroy(()=>{
   //  res.cookie({maxAge: 0});
-  req.session.setLogin = false ;
       res.redirect('/');
       console.log("You are Logout");
   });

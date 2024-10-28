@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 let profileSchema = mongoose.Schema({
     id: {type:mongoose.Schema.Types.ObjectId},
-    DOB : Date,
+    DOB : String,
     skinColor : String,
     height : String,
     nationality : String,
@@ -10,9 +10,7 @@ let profileSchema = mongoose.Schema({
     stateYouAreLiving : String ,
     occupation : String ,
     highestLevelOfEducation : String ,
-    mobileNumber : Number ,
-    
-
+    mobileNumber : String ,
     
     yourIdealweekend: String,
     yourGoal : String,
@@ -25,8 +23,16 @@ let profileSchema = mongoose.Schema({
     physicalConnection :String,
     yourPreferedTypeOfRelaionship : String ,
 
-     
-    
+    gender: String,
+    yourIdealPartner :String,
+    YourFavouriteFood : String,
+    YourfavouriteMovie: String,
+    yourKindOfMusic: String,
+    placeOfBirth: String,
+    universityOrPlaceOfWork : String,
+    photos: String,
+    profilePix : String,
+
   user:{
     ref:'User',
     type:mongoose.Schema.Types.ObjectId, 
