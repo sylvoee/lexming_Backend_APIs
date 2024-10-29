@@ -41,5 +41,5 @@ let profileSchema = mongoose.Schema({
   createdAt: {type: Date, default: Date.now}
 });
 
-let profileModel = mongoose.model('profile', profileSchema);
+let profileModel = mongoose.model('Profile', profileSchema);
 module.exports = profileModel ;
