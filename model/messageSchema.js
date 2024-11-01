@@ -6,6 +6,7 @@ let messageSchema = mongoose.Schema({
     sender : {type:mongoose.Schema.Types.ObjectId},
     receiver: {type:mongoose.Schema.Types.ObjectId},
     message : String,
+    photoName : String,
     msgStatus : String ,
     time : {type: Date, default: Date.now()},
 

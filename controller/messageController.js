@@ -1,10 +1,11 @@
 
 let messageModel = require('../model/messageSchema');
-
+let fs = require('fs');
 
 module.exports = postMessage = (req, res)=>{
+  
      let{message, receiver, msgStatus} = req.body ;
-
+       console.log(req.filename);
     let aMessage = new messageModel({
         sender : req.session.user._id,
         receiver,
@@ -22,10 +23,10 @@ module.exports = postMessage = (req, res)=>{
   }
 
     // read all Message
-    module.exports = viewMessage  = async(req, res)=>{
+    module.exports = viewMessages  = async(req, res)=>{
 
         // read all Message
-        let docs = await messageModel.find({}).populate('profile').exec();
+        let docs = await messageModel.find({});
         try {
             res.status(200).send({docs});
             // console.log(docs);
@@ -38,17 +39,14 @@ module.exports = postMessage = (req, res)=>{
         // delete message
         module.exports = deleteMessage = async(req, res)=>{
 
-            // ftech from collection
-            let docs = await messageModel.find({}).exec()
-            res.send(docs);
-            
-        //   let ID =req.body.id ;
-        //   try {
-        //     let dMessage = await messageModel.findOneAndDelete({id : ID});
-        //     res.send("message deleted");
-        //   } catch(error) {
-        //     res.send(error)
-        //   }
+          let ID = req.body.id ;
+      
+          try {
+            let dMessage = await messageModel.findByIdAndDelete(ID);
+            res.send("message deleted");
+          } catch(error) {
+            res.send(error)
+          }
 
        
               

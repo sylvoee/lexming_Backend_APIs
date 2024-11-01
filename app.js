@@ -9,9 +9,13 @@ let expressSession = require('express-session');
 let MongoStore = require('connect-mongo')
 let cookieParser = require('cookie-parser');
 const dotgit = require('dotgitignore')();
+var cors = require('cors')
 
 // require dot-env
 require('dotenv').config();
+
+// configurin the middleware
+app.use(cors({origin:'http://localhost:3000/', optionsSuccessStatus:200}));
 
 // connect o databse and create database
 mongoose.connect('mongodb://localhost:27017/lexmingDB').then((e)=>{

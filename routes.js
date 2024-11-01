@@ -7,6 +7,7 @@ const userController = require('./controller/userController');
 const profileController = require('./controller/profileController');
 const photoController = require('./controller/photoController');
 const messageController = require('./controller/messageController');
+const mailController = require('./controller/mailController');
 
 let router = express.Router()
 
@@ -18,7 +19,8 @@ let router = express.Router()
   router.post('/login', login);
   router.get('/logout', logout);
 
-  router.get('/profile/:id', viewProfile);
+  router.get('/a-profile/:id', viewAProfile);
+  router.get('/all-profile', viewAllProfile);
   router.post('/profile', profile);
   router.put('/update-profile', updateProfile);
 
@@ -27,8 +29,10 @@ let router = express.Router()
   router.delete('/delete-photo', deletePhoto);
 
   router.post('/post-message', postMessage);
-//   router.get('/view-photos',viewPhoto);
+  router.get('/view-messages',viewMessages);
   router.delete('/delete-message', deleteMessage);
+
+  router.get('/send-mail', mailer);
 
 
   module.exports = router ;

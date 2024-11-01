@@ -181,8 +181,32 @@ module.exports = profile = (req, res)=>{
     
  }
 
-  // read all Profiles
-  module.exports = viewProfile  = async(req, res)=>{
+
+
+  // read al Profiles
+  module.exports = viewAllProfile  =(req, res)=>{
+    
+    module.exports =  getAllProfile = async()=>{
+      // read all Profile
+      let docs = await profileModel.find({}).populate('user').exec();
+      try {
+          res.status(200).send({docs});
+          // console.log(docs);
+      } catch (error) {
+            res.status(200).send("No record found/ error")
+           
+      }
+      
+  }
+
+  // calling the function
+  getAllProfile();
+  
+      
+    }
+
+  // read al Profiles
+  module.exports = viewAProfile  = async(req, res)=>{
     // res.send("route reached")
     console.log((req.params.id).length);
     // check to see if the Id is equal ro 24 characters

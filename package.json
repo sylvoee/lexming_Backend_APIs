@@ -14,12 +14,14 @@
     "body-parser": "^1.20.3",
     "connect-mongo": "^5.1.0",
     "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "dotgitignore": "^2.1.0",
     "express": "^4.21.1",
     "express-session": "^1.18.1",
     "mongoose": "^8.7.2",
     "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.16",
     "nodemon": "^3.1.7"
   }
 }

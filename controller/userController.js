@@ -1,5 +1,6 @@
 let userModel = require('../model/userSchema');
 let bcrypt = require('bcrypt');
+const { getMaxListeners } = require('connect-mongo');
 
 
 
@@ -52,6 +53,7 @@ module.exports = register=async (req, res)=>{
     aUser.save().then((data)=>{
         // console.log(data);
         res.status(200).send(name + " was registered successfully")
+    
     });
     }else{
       res.status(200).send(error);
