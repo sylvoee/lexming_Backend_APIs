@@ -1,5 +1,6 @@
 const photoModel = require('../model/photoSchema');
 let photoSchema = require('../model/photoSchema');
+let profileSchema = require('../model/profileSchema');
 let fs = require('fs');
 
 const multer  = require('multer')
@@ -7,6 +8,8 @@ const multer  = require('multer')
 module.exports = upload = multer({ dest: 'uploads/' })
 
 module.exports = uploadPhoto = (req, res)=>{
+  // res.send(req.session.user._id) ;
+  // console.log(req.session.user._id);
      
     let aPhoto = new photoModel({
         photoName : req.file.filename,
@@ -27,7 +30,7 @@ module.exports = uploadPhoto = (req, res)=>{
     module.exports = viewPhoto  = async(req, res)=>{
 
         // read all Photo
-        let docs = await photoModel.find({}).populate('profile').exec();
+        let docs = await photoModel.find({}).exec();
         try {
             res.status(200).send({docs});
             // console.log(docs);

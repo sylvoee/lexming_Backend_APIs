@@ -5,10 +5,10 @@ let photoSchema = mongoose.Schema({
     photoName : String,
     profilePhoto: String,
     
-  profile:{
-    ref:'Profile',
-    type:mongoose.Schema.Types.ObjectId
-  },
+    profile:{
+      ref:'Profile',
+      type:mongoose.Schema.Types.ObjectId, 
+    },
   createdAt: {type: Date, default: Date.now}
 });
 
