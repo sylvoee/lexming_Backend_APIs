@@ -16,7 +16,7 @@ require('dotenv').config()
 require('dotenv').config();
 
 // configurin the middleware
-app.use(cors({ origin: 'http://localhost:3000/', optionsSuccessStatus: 200 }));
+app.use(cors({ origin: 'http://localhost:3000/', optionsSuccessStatus: 200, credentials: true }));
 
 // connect o databse and create database
 mongoose.connect(process.env.DBURL).then((e) => {
