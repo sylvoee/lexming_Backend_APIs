@@ -9,7 +9,10 @@ module.exports = home = async(req, res)=>{
     let docs = await profileModel.find({}).populate('user').exec();
     try {
     if(typeof(req.session.user) != 'undefined'){
-      res.status(200).send({login: req.session.user.name ,isLogin:req.session.setLogin,page: 'Home Page', user:req.session.user, docs:docs});
+      res.status(200).send({login: req.session.user.name ,
+        isLogin:req.session.setLogin,page: 'Home Page',
+         user:req.session.user, docs:docs
+        });
     }else{
       res.status(200).send({home :"Home Page..."});
     }

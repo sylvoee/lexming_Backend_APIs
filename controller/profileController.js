@@ -1,9 +1,22 @@
 const { emit } = require('nodemon');
 let profileModel = require('../model/profileSchema');
 let userModel = require('../model/userSchema');
+const { EventEmitterAsyncResource } = require('connect-mongo');
 
 
-module.exports = profile = (req, res)=>{
+module.exports = profile = async(req, res)=>{
+
+    // if already login, pls redirect
+    if(req.session.setLogin == false){
+      res.send("You can't create a profile until you login")
+    }else{
+     let ID = req.session.user._id;
+      let docs = await profileModel.findOne({user: ID }).exec();
+    
+      if(docs){
+        // to check if profile already
+             res.send("You are ready have a profile");
+         }else{
 
     let{
         DOB ,
@@ -39,10 +52,11 @@ module.exports = profile = (req, res)=>{
         photos,
         profilePix
 
-        
-      
     
     } = req.body ;
+
+    if(Object.keys(req.body).length > 0  ){
+
     // insert into dtabase
     let aProfile = new profileModel({
        
@@ -92,12 +106,25 @@ module.exports = profile = (req, res)=>{
     res.send("You must be login to create a profile")
    }
     
+    }else{
+      res.send("All fields must not be empty");
+      console.log("All fields must not be empty");
+    }
+
+        }
+
+   }
 
 }
 
 
   // Update Userprofile c
   module.exports =  updateProfile = async (req, res, next)=>{
+    
+    // To check if you are login
+    if(req.session.setLogin == false){
+      res.send("You can't edit profile if you are ot login")
+    }else{
     let{
         DOB ,
         skinColor ,
@@ -178,6 +205,7 @@ module.exports = profile = (req, res)=>{
         res.status(200).send(error);
          console.log(error);
     }
+  }
     
  }
 
@@ -190,7 +218,7 @@ module.exports = profile = (req, res)=>{
       // read all Profile
       let docs = await profileModel.find({}).populate('user').exec();
       try {
-          res.status(200).send({docs});
+          res.status(200).json({docs});
           // console.log(docs);
       } catch (error) {
             res.status(200).send("No record found/ error")
@@ -208,7 +236,6 @@ module.exports = profile = (req, res)=>{
   // read al Profiles
   module.exports = viewAProfile  = async(req, res)=>{
     // res.send("route reached")
-    console.log((req.params.id).length);
     // check to see if the Id is equal ro 24 characters
     if((req.params.id).length != 24){
       res.send("wrong URL/ID");

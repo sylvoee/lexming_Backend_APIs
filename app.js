@@ -7,13 +7,15 @@ let app = express();
 let routes = require('./routes');
 let expressSession = require('express-session');
 let MongoStore = require('connect-mongo')
-let cookieParser = require('cookie-parser');
+let cookieParser = require('cookie-parser'); 
 const dotgit = require('dotgitignore')();
 var cors = require('cors')
 require('dotenv').config()
 
 // require dot-env
 require('dotenv').config();
+// accept jSON data
+app.use(express.json());
 
 // configurin the middleware
 app.use(cors({ origin: 'http://127.0.0.1:3000',
@@ -29,29 +31,20 @@ mongoose.connect(process.env.DBURL).then((e) => {
 
 app.use(cookieParser())
 
-// set up auth
-app.set('trust proxy', 1) // trust first proxy
-app.use(expressSession({
-    secret: 'a secrete',
+  // set up auth
+  app.set('trust proxy', 1) // trust first proxy
+  app.use(expressSession({
+    secret: process.env.SESSION_SECRETE,
     resave: false,
-    store: MongoStore.create({
-        mongoUrl: process.env.DBURL,
-        collectionName: 'sessionStore',
-        useUnifiedTopology: true
-    }, (err, suc) => {
-        if (err) { console.log(err) }
-        if (suc) {
-            console.log("db SUCESSFULLY CONNECTED")
-        }
+    store: MongoStore.create({ mongoUrl: process.env.DBURL, collectionName: 'sessionStore',
+     useUnifiedTopology: true 
     }),
-    saveUninitialized: true,
-    cookie: {
-        maxAge: 1000 * 60 * 60 * 24 * 90
-    }
-}))
+    saveUninitialized:true  ,
+    cookie: { 
+      maxAge: 1000 * 60 * 60 * 24 * 90 }
+  }))
 
-// accept jSON data
-app.use(express.json());
+
 
 // create application/json parser
 app.use(bodyParser.urlencoded({ extended: false }))

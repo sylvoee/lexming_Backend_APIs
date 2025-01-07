@@ -5,9 +5,24 @@ const { getMaxListeners } = require('connect-mongo');
 
 
 module.exports = register=async (req, res)=>{
-    const{name, email, password, confirmPassword, forgetPassword} = req.body ;
-   
-     let error = [];
+    // if already login, pls redirect
+    if(req.session.setLogin == true){
+      res.redirect('/');
+    }else{
+  let error = [];
+
+  if(Object.keys(req.body).length > 0 ){
+    console.log("bad input");
+    res.send("No input field should be empty");
+  }else{
+
+
+       const{name, email, password, confirmPassword, forgetPassword} = req.body ;
+
+     if(!password){
+      error.push("password field must not be empty");
+     }
+
      // making sure that password character is not less than 8
     if(password.toString().length < 8){
       error.push("You must enter atleast 8 character password");
@@ -18,11 +33,18 @@ module.exports = register=async (req, res)=>{
        error.push("email must not be the same as password");
     }
 
+    if(!email){
+      error.push("email field must not be empty");
+     }
+
     if(password != confirmPassword){
         error.push("confirm password, not the same as password");
       
     }
 
+    if(!name){
+      error.push("password field must not be empty");
+     }
       // making sure thgat name field is not empty
     if(name.toString().length < 1){
         error.push("name field must not be blank");
@@ -41,63 +63,99 @@ module.exports = register=async (req, res)=>{
 
         
     
-
      // if no erroror, pls insert into the database
     if(error.length < 1){
-   // hashing the password
+      try {
+        // hashing the password
     let salt = bcrypt.genSaltSync(10);
     let hashPassword = bcrypt.hashSync(password, salt);
 
     let aUser = new userModel({name,email,password:hashPassword,forgetPassword});
-
+      // saving data into database
     aUser.save().then((data)=>{
         // console.log(data);
         res.status(200).send(name + " was registered successfully")
     
     });
+      } catch (err) {
+        console.log(err) ;
+      }
+
     }else{
       res.status(200).send(error);
     }
+  
+  }
+}
   
   }
 
 
 //  post login controller
 module.exports = login = async (req, res, next)=>{
-    // res.status(200).send('login reached');
-    const{email, password, status} = req.body;
+// If already login, redirect to home page
+if(req.session.setLogin == true){
+  res.redirect('/');
+}else{
 
-    // if already login, pls redirect
-    if(req.session.setLogin == true){
-      res.redirect('/');
-    }else{
+  const{email, password, status} = req.body;
 
+  // if already login, pls redirect
+  if(req.session.setLogin == true){
+    res.redirect('/');
+  }else{
+
+  if(typeof password == 'undefined'||typeof email == 'undefined'){
+    console.log("email/password must not be empty");
+    res.status(200).send("email or password must not be empty");
+
+  }else{
+   
+    try {
       
-    if( password.length < 1 || email.length < 1){
-      console.log("email/password must not be empty");
-      res.status(200).send("email/password must not be empty");
+  // Array to store errror
+  let error = [];
+  let data = await userModel.findOne({email}).exec();
+   
+  // if email exist , query the database
+ if(data){
+  let isMatch = await bcrypt.compare(password, data.password);
+  
+  // if user exist check for password
+      if(isMatch){
+        //  using sessions
+         req.session.setLogin = true;
+         const{_id, name, email,status, createdAt} = data ;
+         let aUser = {_id ,name, email, status, createdAt} ;
+          req.session.user = aUser;
+          
+          // console.log(req.session);
+          res.status(200).send({isLogin: req.session.setLogin, user: req.session.user } );
+          console.log(isMatch);
+          
+      }else{
+        // if password does not exist
+          error.push("Incorrect password");
+                res.send(error);
+      }
+ }else{
+  error.push("Invalid username or email");
+  res.send(error);
+ }
 
-    }else{
-     
-      let data = await userModel.findOne({email}).exec();
-       
-      await bcrypt.compare(password, data.password, (err, isMatch)=>{
-          if(isMatch){
-             req.session.setLogin = true;
-              req.session.user = data;
-              // console.log(req.session);
-              res.status(200).send({isLogin: req.session.setLogin, user: req.session.user } );
-              console.log(isMatch);
-              
-          }else{
-              res.status(200).send("email or/and password does not exist");
-                     console.log("email or/and password does not exist");
-          }
-      });
+
+    } catch (err) {
+      console.log(err)
+    }
+
     
-    }
-       
-    }
+  
+  }
+     
+  }
+
+
+}
    
 }
 
